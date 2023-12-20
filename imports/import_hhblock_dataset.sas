@@ -1,9 +1,9 @@
 proc sql;
-%if %sysfunc(exist(WORK.HHBLOCK_DATASET)) %then %do;
-    drop table WORK.HHBLOCK_DATASET;
+%if %sysfunc(exist(DATASETS.HHBLOCK_DATASET)) %then %do;
+    drop table DATASETS.HHBLOCK_DATASET;
 %end;
-%if %sysfunc(exist(WORK.HHBLOCK_DATASET,VIEW)) %then %do;
-    drop view WORK.HHBLOCK_DATASET;
+%if %sysfunc(exist(DATASETS.HHBLOCK_DATASET,VIEW)) %then %do;
+    drop view DATASETS.HHBLOCK_DATASET;
 %end;
 quit;
 
@@ -13,10 +13,10 @@ FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/DataFil
 
 PROC IMPORT DATAFILE=REFFILE
 	DBMS=CSV
-	OUT=WORK.HHBLOCK_DATASET;
+	OUT=DATASETS.HHBLOCK_DATASET;
 	GETNAMES=YES;
 RUN;
 
-PROC CONTENTS DATA=WORK.HHBLOCK_DATASET; RUN;
+PROC CONTENTS DATA=DATASETS.HHBLOCK_DATASET; RUN;
 
 
