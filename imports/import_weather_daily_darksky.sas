@@ -9,7 +9,7 @@ quit;
 
 
 
-FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/archive/DataFiles/weather_daily_darksky.csv';
+FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/DataFiles/weather_daily_darksky.csv';
 
 PROC IMPORT DATAFILE=REFFILE
 	DBMS=CSV

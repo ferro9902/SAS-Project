@@ -9,7 +9,7 @@ quit;
 
 
 
-FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/archive/DataFiles/acorn_details.csv';
+FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/DataFiles/acorn_details.csv';
 
 PROC IMPORT DATAFILE=REFFILE
 	DBMS=CSV
