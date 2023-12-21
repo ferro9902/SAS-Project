@@ -1,9 +1,9 @@
 proc sql;
-%if %sysfunc(exist(WORK.ACORN_DETAILS)) %then %do;
-    drop table WORK.ACORN_DETAILS;
+%if %sysfunc(exist(CASUSER.ACORN_DETAILS)) %then %do;
+    drop table CASUSER.ACORN_DETAILS;
 %end;
-%if %sysfunc(exist(WORK.ACORN_DETAILS,VIEW)) %then %do;
-    drop view WORK.ACORN_DETAILS;
+%if %sysfunc(exist(CASUSER.ACORN_DETAILS,VIEW)) %then %do;
+    drop view CASUSER.ACORN_DETAILS;
 %end;
 quit;
 
@@ -13,10 +13,10 @@ FILENAME REFFILE DISK '/shared/home/francesco.feroldi01@icatt.it/casuser/DataFil
 
 PROC IMPORT DATAFILE=REFFILE
 	DBMS=CSV
-	OUT=WORK.ACORN_DETAILS;
+	OUT=CASUSER.ACORN_DETAILS;
 	GETNAMES=YES;
 RUN;
 
-PROC CONTENTS DATA=WORK.ACORN_DETAILS; RUN;
+PROC CONTENTS DATA=CASUSER.ACORN_DETAILS; RUN;
 
 
