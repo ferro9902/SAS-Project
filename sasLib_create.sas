@@ -1,1 +1,0 @@
-libname saslib '/shared/home/francesco.feroldi01@icatt.it/casuser';
