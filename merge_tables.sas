@@ -1,24 +1,28 @@
-/* flag instances in uk bank holidays */
+/* flag instances in uk bank holidays + add day of week and of year (as %) + remove header values */
 proc sql;
-    CREATE TABLE CASUSER.daily_dataset_flagged AS
-    SELECT *, CASE WHEN daily_dataset.day IN (SELECT t1.'Bank holidays'n FROM CASUSER.uk_bank_holidays t1) THEN 1 ELSE 0 END AS is_uk_holiday
-    FROM CASUSER.daily_dataset;
+    CREATE TABLE CASUSER.daily_dataset_augmented AS
+    SELECT *, 
+		CASE WHEN daily_dataset.day IN (SELECT t1.'Bank holidays'n FROM CASUSER.uk_bank_holidays t1) THEN 1 ELSE 0 END AS isUkHoliday, 
+		weekday(day) AS dayOfWeek, 
+		yrdif(INPUT(CATS('01JAN', year(day)), DATE9.), day, 'ACT/365') AS dayOfYear
+    FROM CASUSER.daily_dataset
+	WHERE LCLid <> 'LCLid';
 quit;
 
-/* convert weather table time to date */
+/* convert weather time column to date */
 data CASUSER.weather_daily_darksky;
 	set CASUSER.weather_daily_darksky;
 	day = datepart(time);
 	format day YYMMDD10.;
 run;
 
-/* merge daily_dataset with information_households and weather_daily_darksky */
+/* merge daily_dataset with information_households and weather_daily_darksky and bonify columns*/
 proc sql;
-%if %sysfunc(exist(CASUSER.QUERY_FOR_daily_dataset_flagged)) %then %do;
-    drop table CASUSER.QUERY_FOR_daily_dataset_flagged;
+%if %sysfunc(exist(CASUSER.daily_dataset_merged)) %then %do;
+    drop table CASUSER.daily_dataset_merged;
 %end;
-%if %sysfunc(exist(CASUSER.QUERY_FOR_daily_dataset_flagged,VIEW)) %then %do;
-    drop view CASUSER.QUERY_FOR_daily_dataset_flagged;
+%if %sysfunc(exist(CASUSER.daily_dataset_merged,VIEW)) %then %do;
+    drop view CASUSER.daily_dataset_merged;
 %end;
 quit;
 ;
@@ -27,33 +31,23 @@ PROC SQL;
 		SELECT
 			t2.LCLid,
 			t2.'day'n,
-			t2.energy_median,
-			t2.energy_mean,
-			t2.energy_max,
-			t2.energy_std,
-			t2.energy_sum,
-			t2.energy_min,
-			t2.is_uk_holiday,
+			t2.energy_sum AS consumption,
+			t2.isUkHoliday,
+			t2.dayOfWeek,
+			t2.dayOfYear,
 			t1.stdorToU,
-			t3.temperatureMax,
-			t3.temperatureMaxTime,
 			t3.icon,
 			t3.cloudCover,
 			t3.windSpeed,
 			t3.precipType,
-			t3.visibility,
 			t3.uvIndex,
-			t3.uvIndexTime,
-			t3.sunriseTime,
-			t3.sunsetTime,
+			(t3.sunsetTime - t3.sunriseTime)/3600 AS sunlightHours,
 			t3.temperatureLow,
-			t3.temperatureLowTime,
 			t3.temperatureMin,
-			t3.temperatureMinTime,
 			t3.temperatureHigh,
-			t3.temperatureHighTime
+			t3.temperatureMax
 		FROM
-			CASUSER.DAILY_DATASET_FLAGGED t2
+			CASUSER.daily_dataset_augmented t2
 				INNER JOIN CASUSER.INFORMATION_HOUSEHOLDS t1 ON (t2.LCLid = t1.LCLid)
 				INNER JOIN CASUSER.WEATHER_DAILY_DARKSKY t3 ON (t2.'day'n = t3.'day'n)
 	;

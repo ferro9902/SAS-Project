@@ -1,0 +1,2 @@
+- tried to implement data imputation
+    -> limited effect (0.02 on a squared error of 81)
