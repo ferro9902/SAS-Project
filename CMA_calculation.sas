@@ -24,3 +24,8 @@ data CASUSER.daily_dataset_merged_cma;
 
   if first.DayOfWeek then lag_value = .;
 run;
+
+data CASUSER.daily_dataset_merged_cma;
+    set CASUSER.daily_dataset_merged_cma;
+    if cmiss(of _all_) then delete;
+run;

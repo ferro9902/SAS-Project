@@ -2,10 +2,10 @@
 proc sql;
     CREATE TABLE CASUSER.daily_dataset_augmented AS
     SELECT *, 
-		CASE WHEN daily_dataset.day IN (SELECT t1.'Bank holidays'n FROM CASUSER.uk_bank_holidays t1) THEN 1 ELSE 0 END AS isUkHoliday, 
+		CASE WHEN daily_dataset_filtered.day IN (SELECT t1.'Bank holidays'n FROM CASUSER.uk_bank_holidays t1) THEN 1 ELSE 0 END AS isUkHoliday, 
 		weekday(day) AS dayOfWeek, 
 		yrdif(INPUT(CATS('01JAN', year(day)), DATE9.), day, 'ACT/365') AS dayOfYear
-    FROM CASUSER.daily_dataset
+    FROM CASUSER.daily_dataset_filtered
 	WHERE LCLid <> 'LCLid';
 quit;
 
@@ -36,7 +36,6 @@ PROC SQL;
 			t2.dayOfWeek,
 			t2.dayOfYear,
 			t1.stdorToU,
-			t3.icon,
 			t3.cloudCover,
 			t3.windSpeed,
 			t3.precipType,
@@ -45,7 +44,8 @@ PROC SQL;
 			t3.temperatureLow,
 			t3.temperatureMin,
 			t3.temperatureHigh,
-			t3.temperatureMax
+			t3.temperatureMax,
+			t3.summary
 		FROM
 			CASUSER.daily_dataset_augmented t2
 				INNER JOIN CASUSER.INFORMATION_HOUSEHOLDS t1 ON (t2.LCLid = t1.LCLid)
